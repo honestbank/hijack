@@ -1,7 +1,7 @@
 package hijack
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -23,7 +23,7 @@ func Start(hijacker Hijacker, host string) func() {
 			return nil, err
 		}
 		return &http.Response{
-			Body: ioutil.NopCloser(strings.NewReader(response)),
+			Body: io.NopCloser(strings.NewReader(response)),
 		}, nil
 	}, host)
 }

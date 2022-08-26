@@ -35,14 +35,16 @@ func TestHijack(t *testing.T) {
 		http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(200)
 		}))
-		go srv.ListenAndServe()
+		go func() {
+			_ = srv.ListenAndServe()
+		}()
 		defer transport.Hijack(func(request *http.Request) (*http.Response, error) {
 			called = true
 
 			return &http.Response{StatusCode: 444}, nil
 		}, "localhost")()
 		_, err := http.Get("http://localhost:3000")
-		srv.Shutdown(context.Background())
+		_ = srv.Shutdown(context.Background())
 		assert.NoError(t, err)
 		assert.False(t, called)
 	})

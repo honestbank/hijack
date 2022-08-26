@@ -45,7 +45,7 @@ func ExampleStart() {
 	// Alive (mock)
 }
 
-func ExampleStart_2() {
+func ExampleStart_2() { //nolint:govet
 	h := handlers.New()
 	h.Set("GetCharacterByID", func(operationName string) (string, error) {
 		return `{
