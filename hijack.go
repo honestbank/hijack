@@ -23,7 +23,8 @@ func Start(hijacker Hijacker, host string) func() {
 			return nil, err
 		}
 		return &http.Response{
-			Body: io.NopCloser(strings.NewReader(response)),
+			StatusCode: 200,
+			Body:       io.NopCloser(strings.NewReader(response)),
 		}, nil
 	}, host)
 }
