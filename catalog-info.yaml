@@ -1,0 +1,17 @@
+# nonk8s
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: hijack
+  description: Hijack lets you hijack graphql requests on the fly and return custom responses based on operation being fired.
+  annotations:
+    github.com/project-slug: honestbank/hijack
+    github.com/team-slug: honestbank/backend-engineers
+    sonarqube.org/project-key: honestbank_hijack
+  tags:
+    - language:golang
+spec:
+  type: library
+  lifecycle: production
+  owner: group:spend-squad
