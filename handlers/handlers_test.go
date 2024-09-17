@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/honestbank/hijack/v2/handlers"
-	"github.com/honestbank/hijack/v2/internal/request"
+	"github.com/honestbank/hijack/v2/request"
 )
 
 func mockHandler(r *request.GraphqlRequest) (string, error) {

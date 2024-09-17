@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/honestbank/hijack/v2/internal/request"
 	"github.com/honestbank/hijack/v2/internal/transport"
+	"github.com/honestbank/hijack/v2/request"
 )
 
 func GetVariableAs[T any](r *request.GraphqlRequest, name string) (T, error) {

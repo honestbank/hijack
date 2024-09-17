@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/honestbank/hijack/v2/handlers"
-	"github.com/honestbank/hijack/v2/internal/request"
+	"github.com/honestbank/hijack/v2/request"
 )
 
 func ExampleNew() {

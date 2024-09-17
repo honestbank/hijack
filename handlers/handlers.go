@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/honestbank/hijack/v2"
-	"github.com/honestbank/hijack/v2/internal/request"
+	"github.com/honestbank/hijack/v2/request"
 )
 
 type handlers struct {
