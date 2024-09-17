@@ -3,7 +3,7 @@ module github.com/honestbank/hijack/v2
 go 1.18
 
 require (
-	github.com/graphql-go/graphql v0.8.0
+	github.com/graphql-go/graphql v0.8.1
 	github.com/machinebox/graphql v0.2.2
 	github.com/stretchr/testify v1.9.0
 )
