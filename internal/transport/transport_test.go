@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/honestbank/hijack/internal/transport"
+	"github.com/honestbank/hijack/v2/internal/transport"
 )
 
 func TestHijack(t *testing.T) {

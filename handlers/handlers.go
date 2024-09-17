@@ -3,30 +3,31 @@ package handlers
 import (
 	"fmt"
 
-	"github.com/honestbank/hijack"
+	"github.com/honestbank/hijack/v2"
+	"github.com/honestbank/hijack/v2/internal/request"
 )
 
 type handlers struct {
 	items map[string]hijack.Hijacker
 }
 
-func (h *handlers) Set(operationName string, item func(operation string) (string, error)) Manager {
+func (h *handlers) Set(operationName string, item func(r *request.GraphqlRequest) (string, error)) Manager {
 	h.items[operationName] = item
 	return h
 }
 
-func (h *handlers) Handle(operationName string) (string, error) {
-	handler := h.items[operationName]
+func (h *handlers) Handle(r *request.GraphqlRequest) (string, error) {
+	handler := h.items[r.OperationName]
 	if handler == nil {
-		return "", fmt.Errorf("no handler found for %s", operationName)
+		return "", fmt.Errorf("no handler found for %s", r.OperationName)
 	}
 
-	return handler(operationName)
+	return handler(r)
 }
 
 type Manager interface {
-	Set(operationName string, item func(operationName string) (string, error)) Manager
-	Handle(operationName string) (string, error)
+	Set(operationName string, item func(r *request.GraphqlRequest) (string, error)) Manager
+	Handle(r *request.GraphqlRequest) (string, error)
 }
 
 func New() Manager {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/honestbank/hijack/internal/graphql"
+	"github.com/honestbank/hijack/v2/internal/graphql"
 )
 
 const multipleGraphqlOperationDefinition = `

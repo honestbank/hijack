@@ -10,7 +10,7 @@ type transport struct {
 	originalTransport http.RoundTripper
 }
 
-type Handler func(request *http.Request) (*http.Response, error)
+type Handler func(r *http.Request) (*http.Response, error)
 
 func (t *transport) RoundTrip(request *http.Request) (*http.Response, error) {
 	if t.host != request.Host {

@@ -5,11 +5,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/honestbank/hijack/handlers"
+	"github.com/honestbank/hijack/v2/handlers"
+	"github.com/honestbank/hijack/v2/internal/request"
 )
 
-func mockHandler(operationName string) (string, error) {
-	return operationName, nil
+func mockHandler(r *request.GraphqlRequest) (string, error) {
+	return r.OperationName, nil
 }
 
 func TestNew(t *testing.T) {
@@ -18,15 +19,26 @@ func TestNew(t *testing.T) {
 		Set("2", mockHandler).
 		Set("3", mockHandler).
 		Set("4", mockHandler)
-	res, _ := h.Handle("1")
+	req := request.GraphqlRequest{
+		OperationName: "1",
+	}
+	res, _ := h.Handle(&req)
 	assert.Equal(t, "1", res)
-	res, _ = h.Handle("2")
+
+	req.OperationName = "2"
+	res, _ = h.Handle(&req)
 	assert.Equal(t, "2", res)
-	res, _ = h.Handle("3")
+
+	req.OperationName = "3"
+	res, _ = h.Handle(&req)
 	assert.Equal(t, "3", res)
-	res, _ = h.Handle("4")
+
+	req.OperationName = "4"
+	res, _ = h.Handle(&req)
 	assert.Equal(t, "4", res)
-	res, err := h.Handle("5")
+
+	req.OperationName = "5"
+	res, err := h.Handle(&req)
 	assert.Equal(t, "", res)
 	assert.EqualError(t, err, "no handler found for 5")
 }

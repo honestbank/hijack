@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/honestbank/hijack/internal/generics"
+	"github.com/honestbank/hijack/v2/internal/generics"
 )
 
 func TestFilter(t *testing.T) {
