@@ -1,44 +1,74 @@
 on: push
 jobs:
-  test:
-    name: go-tests (1.18)
-    runs-on: ubuntu-22.04
+  get-go-version:
+    name: Get Go Version
+    runs-on: ubuntu-latest
+    outputs:
+      go_version: ${{ steps.get-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
-          go-version: 1.18
-      - run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+          token: ${{ secrets.ENGINEERING_GITHUB_PERSONAL_ACCESS_TOKEN }}
+
+      - name: Get Go Version from go.mod
+        id: get-version
+        run: |
+          # Extract the Go version from go.mod
+          GO_VERSION=$(grep -oP '^go \K[0-9]+\.[0-9]+' go.mod)
+          echo "Go Version: $GO_VERSION"
+          echo "version=$GO_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check Go Version
+        run: |
+          echo "Current version in go.mod is: ${{ steps.get-version.outputs.version }}"
+
+  tests:
+    name: go-tests
+    needs: [ get-go-version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Golang
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ needs.get-go-version.outputs.go_version }}
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Test
+        run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.51.2
+          version: v1.59.0
           args: --timeout=10m --modules-download-mode=readonly
-          skip-pkg-cache: true
-          skip-build-cache: true
+
       - name: sonarcloud-scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   release:
     name: semantic-release
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [ tests ]
     steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '17'
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: release
-        uses: cycjimmy/semantic-release-action@v2
+        uses: cycjimmy/semantic-release-action@v4
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ENGINEERING_GITHUB_PERSONAL_ACCESS_TOKEN }}
         with:
-          semantic_version: 18
+          semantic_version: 19
           extra_plugins: |
             @semantic-release/git@10.0.1
             @semantic-release/exec@6.0.2

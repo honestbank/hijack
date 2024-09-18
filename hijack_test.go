@@ -8,7 +8,8 @@ import (
 	"github.com/machinebox/graphql"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/honestbank/hijack"
+	"github.com/honestbank/hijack/v2"
+	"github.com/honestbank/hijack/v2/request"
 )
 
 type Response struct {
@@ -17,8 +18,8 @@ type Response struct {
 
 func TestHijack(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		restoreFunction := hijack.Start(func(operationName string) (string, error) {
-			if operationName == "GetUser" {
+		restoreFunction := hijack.Start(func(r *request.GraphqlRequest) (string, error) {
+			if r.OperationName == "GetUser" {
 				return `{"data": {"me": "something"}}`, nil
 			}
 			return "", nil
@@ -34,8 +35,8 @@ func TestHijack(t *testing.T) {
 		// now it'll fire real requests
 	})
 	t.Run("fire invalid query, receive an error", func(t *testing.T) {
-		defer hijack.Start(func(operationName string) (string, error) {
-			if operationName == "GetUser" {
+		defer hijack.Start(func(r *request.GraphqlRequest) (string, error) {
+			if r.OperationName == "GetUser" {
 				return `{"data": {"me": "something"}}`, nil
 			}
 			return "", nil
@@ -47,8 +48,8 @@ func TestHijack(t *testing.T) {
 		assert.Error(t, err)
 	})
 	t.Run("hijacker can return errors", func(t *testing.T) {
-		defer hijack.Start(func(operationName string) (string, error) {
-			if operationName == "GetUser" {
+		defer hijack.Start(func(r *request.GraphqlRequest) (string, error) {
+			if r.OperationName == "GetUser" {
 				return "", errors.New("some error")
 			}
 			return "", nil
