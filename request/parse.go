@@ -27,6 +27,8 @@ func Parse(r *http.Request) (*GraphqlRequest, error) {
 			return nil, err
 		}
 	}
+	clonedRequest := r.Clone(r.Context())
+	req.OriginalRequest = clonedRequest
 
 	return &req, nil
 }

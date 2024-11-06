@@ -41,4 +41,12 @@ func TestParse(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "GetUser", r.OperationName)
 	})
+	t.Run("hydrates valid request", func(t *testing.T) {
+		req, err := http.NewRequest("POST", "/", strings.NewReader(fmt.Sprintf(`{"query": "%s", "variables": %s}`, graphqlOperationWithFragment, graphqlOperationVariables)))
+		req.Header.Set("x-user-id", "123")
+		assert.NoError(t, err)
+		r, err := request.Parse(req)
+		assert.NoError(t, err)
+		assert.Equal(t, "123", r.OriginalRequest.Header.Get("x-user-id"))
+	})
 }
