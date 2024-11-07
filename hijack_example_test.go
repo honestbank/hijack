@@ -47,7 +47,7 @@ func ExampleStart() {
 	// Alive (mock)
 }
 
-func ExampleStart_2() { //nolint:govet
+func ExampleStart_badOperationDoesNotAffectOtherCalls() { //nolint:govet
 	h := handlers.New()
 	h.Set("GetCharacterByID", func(r *request.GraphqlRequest) (string, error) {
 		return `{
@@ -79,7 +79,7 @@ func ExampleStart_2() { //nolint:govet
 	// Alive (mock)
 }
 
-func Example_AssertVariablesInRequest() { //nolint:govet
+func ExampleStart_assertVariablesInRequest() { //nolint:govet
 	h := handlers.New()
 	h.Set("GetCharacterByID", func(r *request.GraphqlRequest) (string, error) {
 		id, err := hijack.GetVariableAs[string](r, "id")
@@ -135,4 +135,24 @@ func Example_AssertVariablesInRequest() { //nolint:govet
 	//11 (Mock)
 	//Albert Einstein (from mock)
 	//Alive (mock)
+}
+
+func ExampleStart_withSequence() {
+	s := hijack.Sequence[int](11, 12, 13)
+	defer hijack.Start(func(r *request.GraphqlRequest) (string, error) {
+		return fmt.Sprintf(`{"data": {"character": {"id": "%d (Mock)","name": "Albert Einstein (from mock)","status": "Alive (mock)"}}}`, s.GetNext()), nil
+	}, "rickandmortyapi.com")()
+	client := graphql.NewClient("https://rickandmortyapi.com/graphql")
+	request := graphql.NewRequest(`query GetCharacterByID{ character(id:"11"){id, name, status }}`)
+	response := OperationResult{}
+
+	_ = client.Run(context.Background(), request, &response)
+	fmt.Println(response.Character.ID)
+	_ = client.Run(context.Background(), request, &response)
+	fmt.Println(response.Character.ID)
+	_ = client.Run(context.Background(), request, &response)
+	fmt.Println(response.Character.ID)
+	//Output:11 (Mock)
+	// 12 (Mock)
+	// 13 (Mock)
 }
