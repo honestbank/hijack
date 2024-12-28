@@ -38,7 +38,7 @@ func TestNew(t *testing.T) {
 	assert.Equal(t, "4", res)
 
 	req.OperationName = "5"
-	res, err := h.Handle(&req)
-	assert.Equal(t, "", res)
-	assert.EqualError(t, err, "no handler found for 5")
+	assert.Panics(t, func() {
+		_, _ := h.Handle(&req)
+	})
 }
