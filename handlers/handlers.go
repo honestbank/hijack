@@ -19,7 +19,7 @@ func (h *handlers) Set(operationName string, item func(r *request.GraphqlRequest
 func (h *handlers) Handle(r *request.GraphqlRequest) (string, error) {
 	handler := h.items[r.OperationName]
 	if handler == nil {
-		return "", panic("no handler found for %s", r.OperationName)
+		return "", panic(fmt.Sprintf("no handler found for %s", r.OperationName))
 	}
 
 	return handler(r)
