@@ -39,6 +39,6 @@ func TestNew(t *testing.T) {
 
 	req.OperationName = "5"
 	assert.Panics(t, func() {
-		_, _ := h.Handle(&req)
+		_, _ = h.Handle(&req)
 	})
 }
