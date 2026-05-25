@@ -1,6 +1,6 @@
 module github.com/honestbank/hijack/v2
 
-go 1.18
+go 1.26.0
 
 require (
 	github.com/graphql-go/graphql v0.8.1
