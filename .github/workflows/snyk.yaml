@@ -40,10 +40,12 @@ jobs:
         run: |
           echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
       - name: Setup Snyk
+        env:
+          ORG_ID: ${{ inputs.org_id }}
         run: |
           npm install snyk -g
           snyk auth ${{secrets.SNYK_ACCESS_TOKEN}}
-          snyk config set org=${{ inputs.org_id }}
+          snyk config set org=$ORG_ID
       - name: Configure ssh-key for private modules
         env:
           SSH_KEY: ${{ secrets.ENGINEERING_SSH_KEY }}
