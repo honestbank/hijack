@@ -15,7 +15,7 @@ type GraphqlRequest struct {
 }
 
 func Parse(r *http.Request) (*GraphqlRequest, error) {
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 	req := GraphqlRequest{}
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
