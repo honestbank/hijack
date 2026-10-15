@@ -3,10 +3,12 @@ package transport_test
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/honestbank/hijack/v2/internal/transport"
 )
@@ -31,19 +33,21 @@ func TestHijack(t *testing.T) {
 	})
 	t.Run("still forwards request when host is not matched", func(t *testing.T) {
 		called := false
-		srv := http.Server{Addr: ":3000"}
-		http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		srv := http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(200)
-		}))
+		})}
+		// Listen before the request: ListenAndServe in the goroutine can start too late.
+		listener, err := net.Listen("tcp", ":3000")
+		require.NoError(t, err)
 		go func() {
-			_ = srv.ListenAndServe()
+			_ = srv.Serve(listener)
 		}()
 		defer transport.Hijack(func(request *http.Request) (*http.Response, error) {
 			called = true
 
 			return &http.Response{StatusCode: 444}, nil
 		}, "localhost")()
-		_, err := http.Get("http://localhost:3000")
+		_, err = http.Get("http://localhost:3000")
 		_ = srv.Shutdown(context.Background())
 		assert.NoError(t, err)
 		assert.False(t, called)
